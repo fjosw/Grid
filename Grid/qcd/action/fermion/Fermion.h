@@ -54,6 +54,8 @@ NAMESPACE_CHECK(Wilson);
 NAMESPACE_CHECK(WilsonTM);
 #include <Grid/qcd/action/fermion/WilsonCloverFermion.h> // 4d wilson clover fermions
 NAMESPACE_CHECK(WilsonClover);
+#include <Grid/qcd/action/fermion/WilsonCloverTMFermion.h> // 4d wilson clover fermions
+NAMESPACE_CHECK(WilsonCloverTM);
 #include <Grid/qcd/action/fermion/WilsonFermion5D.h>     // 5d base used by all 5d overlap types
 NAMESPACE_CHECK(Wilson5D);
 
