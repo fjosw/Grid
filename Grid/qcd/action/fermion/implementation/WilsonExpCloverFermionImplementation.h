@@ -192,7 +192,7 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
    });
   }
   ExpCloverTerm *= diag_mass;
-  ExpCloverTermInv /= diag_mass;
+  ExpCloverTermInv *= (1 / diag_mass);
 
   //
   //
