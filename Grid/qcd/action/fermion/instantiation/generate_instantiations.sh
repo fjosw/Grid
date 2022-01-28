@@ -40,8 +40,7 @@ EOF
 
 done
 
-CC_LIST=" \ 
-  WilsonExpCloverFermionInstantiation \
+CC_LIST="WilsonExpCloverFermionInstantiation \
   WilsonCloverFermionInstantiation \
   WilsonFermionInstantiation \
   WilsonKernelsInstantiation \
