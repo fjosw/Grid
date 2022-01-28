@@ -118,7 +118,7 @@ accelerator_inline iMatrix<vtype,3> Exponentiate(const iMatrix<vtype,3> &arg, Re
 }
 
 static RealD cN[30];
-static const Niter = DEFAULT_MAT_EXP_CLOVER;
+static const int Niter = DEFAULT_MAT_EXP_CLOVER;
 static int init_cN = 0;
 static void set_cN(int N)
 {
