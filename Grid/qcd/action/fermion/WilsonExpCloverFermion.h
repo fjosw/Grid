@@ -2,7 +2,7 @@
 
     Grid physics library, www.github.com/paboyle/Grid
 
-    Source file: ./lib/qcd/action/fermion/WilsonCloverFermion.h
+    Source file: ./lib/qcd/action/fermion/WilsonExpCloverFermion.h
 
     Copyright (C) 2017
 
@@ -112,9 +112,9 @@ public:
     csw_t = _csw_t * 0.5;
 
     if (csw_r == 0)
-      std::cout << GridLogWarning << "Initializing WilsonCloverFermion with csw_r = 0" << std::endl;
+      std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_r = 0" << std::endl;
     if (csw_t == 0)
-      std::cout << GridLogWarning << "Initializing WilsonCloverFermion with csw_t = 0" << std::endl;
+      std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_t = 0" << std::endl;
 
     ImportGauge(_Umu);
   }

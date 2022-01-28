@@ -2,7 +2,7 @@
 
     Grid physics library, www.github.com/paboyle/Grid
 
-    Source file: ./lib/qcd/action/fermion/WilsonCloverFermion.cc
+    Source file: ./lib/qcd/action/fermion/WilsonExpCloverFermion.cc
 
     Copyright (C) 2017
 
