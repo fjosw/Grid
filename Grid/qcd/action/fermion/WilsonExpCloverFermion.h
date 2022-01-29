@@ -77,15 +77,6 @@ public:
                                                                                      Hgrid,
                                                                                      _mass, impl_p, clover_anisotropy),
                                                                  CloverTerm(&Fgrid),
-                                                                 CloverTermInv(&Fgrid),
-                                                                 CloverTermEven(&Hgrid),
-                                                                 CloverTermOdd(&Hgrid),
-                                                                 CloverTermInvEven(&Hgrid),
-                                                                 CloverTermInvOdd(&Hgrid),
-                                                                 CloverTermDagEven(&Hgrid),
-                                                                 CloverTermDagOdd(&Hgrid),
-                                                                 CloverTermInvDagEven(&Hgrid),
-                                                                 CloverTermInvDagOdd(&Hgrid),
 																 ExpCloverTerm(&Fgrid),
 																 ExpCloverTermInv(&Fgrid),
 																 ExpCloverTermEven(&Hgrid),
@@ -261,11 +252,7 @@ protected:
   RealD csw_r;                                               // Clover coefficient - spatial
   RealD csw_t;                                               // Clover coefficient - temporal
   RealD diag_mass;                                           // Mass term
-  CloverFieldType CloverTerm, CloverTermInv;                 // Clover term
-  CloverFieldType CloverTermEven, CloverTermOdd;             // Clover term EO
-  CloverFieldType CloverTermInvEven, CloverTermInvOdd;       // Clover term Inv EO
-  CloverFieldType CloverTermDagEven, CloverTermDagOdd;       // Clover term Dag EO
-  CloverFieldType CloverTermInvDagEven, CloverTermInvDagOdd; // Clover term Inv Dag EO
+  CloverFieldType CloverTerm;                 // Clover term
   CloverFieldType ExpCloverTerm, ExpCloverTermInv;                 // ExpClover term
   CloverFieldType ExpCloverTermEven, ExpCloverTermOdd;             // ExpClover term EO
   CloverFieldType ExpCloverTermInvEven, ExpCloverTermInvOdd;       // ExpClover term Inv EO
