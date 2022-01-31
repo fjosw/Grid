@@ -2,7 +2,7 @@
 
     Grid physics library, www.github.com/paboyle/Grid
 
-    Source file: ./lib/qcd/action/fermion/WilsonCloverFermion.cc
+    Source file: ./lib/qcd/action/fermion/WilsonExpCloverFermion.cc
 
     Copyright (C) 2017
 
@@ -192,63 +192,9 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
    });
   }
   ExpCloverTerm *= diag_mass;
-  ExpCloverTermInv /= diag_mass;
-
-  //
-  //
-  //
-
-  CloverTerm += diag_mass;
-
-  //int lvol = _Umu.Grid()->lSites();
-  //int DimRep = Impl::Dimension;
-
-  {
-    autoView(CTv,CloverTerm,CpuRead);
-    autoView(CTIv,CloverTermInv,CpuWrite);
-    thread_for(site, lvol, {
-      Coordinate lcoor;
-      grid->LocalIndexToLocalCoor(site, lcoor);
-      Eigen::MatrixXcd EigenCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
-      Eigen::MatrixXcd EigenInvCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
-      typename SiteCloverType::scalar_object Qx = Zero(), Qxinv = Zero();
-      peekLocalSite(Qx, CTv, lcoor);
-      //if (csw!=0){
-      for (int j = 0; j < Ns; j++)
-	for (int k = 0; k < Ns; k++)
-	  for (int a = 0; a < DimRep; a++)
-	    for (int b = 0; b < DimRep; b++){
-	      auto zz =  Qx()(j, k)(a, b);
-	      EigenCloverOp(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
-	    }
-      //   if (site==0) std::cout << "site =" << site << "\n" << EigenCloverOp << std::endl;
-      
-      EigenInvCloverOp = EigenCloverOp.inverse();
-      //std::cout << EigenInvCloverOp << std::endl;
-      for (int j = 0; j < Ns; j++)
-	for (int k = 0; k < Ns; k++)
-	  for (int a = 0; a < DimRep; a++)
-	    for (int b = 0; b < DimRep; b++)
-	      Qxinv()(j, k)(a, b) = EigenInvCloverOp(a + j * DimRep, b + k * DimRep);
-      //    if (site==0) std::cout << "site =" << site << "\n" << EigenInvCloverOp << std::endl;
-      //  }
-      pokeLocalSite(Qxinv, CTIv, lcoor);
-    });
-  }
+  ExpCloverTermInv *= (1 / diag_mass);
 
   // Separate the even and odd parts
-  pickCheckerboard(Even, CloverTermEven, CloverTerm);
-  pickCheckerboard(Odd, CloverTermOdd, CloverTerm);
-
-  pickCheckerboard(Even, CloverTermDagEven, adj(CloverTerm));
-  pickCheckerboard(Odd, CloverTermDagOdd, adj(CloverTerm));
-
-  pickCheckerboard(Even, CloverTermInvEven, CloverTermInv);
-  pickCheckerboard(Odd, CloverTermInvOdd, CloverTermInv);
-
-  pickCheckerboard(Even, CloverTermInvDagEven, adj(CloverTermInv));
-  pickCheckerboard(Odd, CloverTermInvDagOdd, adj(CloverTermInv));
-
   pickCheckerboard(Even, ExpCloverTermEven, ExpCloverTerm);
   pickCheckerboard(Odd, ExpCloverTermOdd, ExpCloverTerm);
 

@@ -2,7 +2,7 @@
 
     Grid physics library, www.github.com/paboyle/Grid
 
-    Source file: ./lib/qcd/action/fermion/WilsonCloverFermion.h
+    Source file: ./lib/qcd/action/fermion/WilsonExpCloverFermion.h
 
     Copyright (C) 2017
 
@@ -77,15 +77,6 @@ public:
                                                                                      Hgrid,
                                                                                      _mass, impl_p, clover_anisotropy),
                                                                  CloverTerm(&Fgrid),
-                                                                 CloverTermInv(&Fgrid),
-                                                                 CloverTermEven(&Hgrid),
-                                                                 CloverTermOdd(&Hgrid),
-                                                                 CloverTermInvEven(&Hgrid),
-                                                                 CloverTermInvOdd(&Hgrid),
-                                                                 CloverTermDagEven(&Hgrid),
-                                                                 CloverTermDagOdd(&Hgrid),
-                                                                 CloverTermInvDagEven(&Hgrid),
-                                                                 CloverTermInvDagOdd(&Hgrid),
 																 ExpCloverTerm(&Fgrid),
 																 ExpCloverTermInv(&Fgrid),
 																 ExpCloverTermEven(&Hgrid),
@@ -112,9 +103,9 @@ public:
     csw_t = _csw_t * 0.5;
 
     if (csw_r == 0)
-      std::cout << GridLogWarning << "Initializing WilsonCloverFermion with csw_r = 0" << std::endl;
+      std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_r = 0" << std::endl;
     if (csw_t == 0)
-      std::cout << GridLogWarning << "Initializing WilsonCloverFermion with csw_t = 0" << std::endl;
+      std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_t = 0" << std::endl;
 
     ImportGauge(_Umu);
   }
@@ -261,11 +252,7 @@ protected:
   RealD csw_r;                                               // Clover coefficient - spatial
   RealD csw_t;                                               // Clover coefficient - temporal
   RealD diag_mass;                                           // Mass term
-  CloverFieldType CloverTerm, CloverTermInv;                 // Clover term
-  CloverFieldType CloverTermEven, CloverTermOdd;             // Clover term EO
-  CloverFieldType CloverTermInvEven, CloverTermInvOdd;       // Clover term Inv EO
-  CloverFieldType CloverTermDagEven, CloverTermDagOdd;       // Clover term Dag EO
-  CloverFieldType CloverTermInvDagEven, CloverTermInvDagOdd; // Clover term Inv Dag EO
+  CloverFieldType CloverTerm;                 // Clover term
   CloverFieldType ExpCloverTerm, ExpCloverTermInv;                 // ExpClover term
   CloverFieldType ExpCloverTermEven, ExpCloverTermOdd;             // ExpClover term EO
   CloverFieldType ExpCloverTermInvEven, ExpCloverTermInvOdd;       // ExpClover term Inv EO
