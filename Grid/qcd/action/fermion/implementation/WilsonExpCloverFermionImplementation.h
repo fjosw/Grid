@@ -157,42 +157,57 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   	   for (int b = 0; b < DimRep; b++)
   	    Qxexp()(j+Ns/2, k+Ns/2)(a, b) = ExpCloverOp(a + j * DimRep, b + k * DimRep);
 
-  	// Now that the full 12x12 block is filled do poke!
-  	pokeLocalSite(Qxexp, CTExpv, lcoor);
-
-  	// exp(-A)
-
-  	//
-  	// upper left block
-  	//
-
-  	ExpCloverOp = Exponentiate(srcCloverOpUL,-1.0/(diag_mass));
-
-  	for (int j = 0; j < Ns/2; j++)
-  	 for (int k = 0; k < Ns/2; k++)
-  	  for (int a = 0; a < DimRep; a++)
-  	   for (int b = 0; b < DimRep; b++)
-  	    Qxexp()(j, k)(a, b) = ExpCloverOp(a + j * DimRep, b + k * DimRep);
-
-  	//
-    // lower right block
-  	//
-
-  	ExpCloverOp = Exponentiate(srcCloverOpLR,-1.0/(diag_mass));
-
-  	for (int j = 0; j < Ns/2; j++)
-  	 for (int k = 0; k < Ns/2; k++)
-  	  for (int a = 0; a < DimRep; a++)
-  	   for (int b = 0; b < DimRep; b++)
-  	    Qxexp()(j+Ns/2, k+Ns/2)(a, b) = ExpCloverOp(a + j * DimRep, b + k * DimRep);
-
-  	// Now that the full 12x12 block is filled do poke!
-  	pokeLocalSite(Qxexp, CTExpIv, lcoor);
-
    });
   }
   ExpCloverTerm *= diag_mass;
-  ExpCloverTermInv *= (1 / diag_mass);
+
+  // Add the twisted mass
+  CloverFieldType T(CloverTerm.Grid());
+  T = Zero();
+  autoView(T_v,T,AcceleratorWrite);
+  accelerator_for(i, CloverTerm.Grid()->oSites(),1,
+  {
+    T_v[i]()(0, 0) = +twmass;
+    T_v[i]()(1, 1) = +twmass;
+    T_v[i]()(2, 2) = -twmass;
+    T_v[i]()(3, 3) = -twmass;
+  });
+  T = timesI(T);
+  ExpCloverTerm += T;
+  // ExpCloverTermInv *= (1 / diag_mass);
+
+  int lvol = _Umu.Grid()->lSites();
+  int DimRep = Impl::Dimension;
+
+  {
+    autoView(CTv,ExpCloverTerm,CpuRead);
+    autoView(CTIv,ExpCloverTermInv,CpuWrite);
+    thread_for(site, lvol, {
+      Coordinate lcoor;
+      grid->LocalIndexToLocalCoor(site, lcoor);
+      Eigen::MatrixXcd EigenCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
+      Eigen::MatrixXcd EigenInvCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
+      typename SiteCloverType::scalar_object Qx = Zero(), Qxinv = Zero();
+      peekLocalSite(Qx, CTv, lcoor);
+
+      for (int j = 0; j < Ns; j++)
+        for (int k = 0; k < Ns; k++)
+          for (int a = 0; a < DimRep; a++)
+            for (int b = 0; b < DimRep; b++){
+              auto zz =  Qx()(j, k)(a, b);
+              EigenCloverOp(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
+      }
+
+      EigenInvCloverOp = EigenCloverOp.inverse();
+      for (int j = 0; j < Ns; j++)
+        for (int k = 0; k < Ns; k++)
+          for (int a = 0; a < DimRep; a++)
+            for (int b = 0; b < DimRep; b++)
+              Qxinv()(j, k)(a, b) = EigenInvCloverOp(a + j * DimRep, b + k * DimRep);
+      pokeLocalSite(Qxinv, CTIv, lcoor);
+    });
+  }
+
 
   // Separate the even and odd parts
   pickCheckerboard(Even, ExpCloverTermEven, ExpCloverTerm);

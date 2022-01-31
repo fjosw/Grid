@@ -69,6 +69,7 @@ public:
   WilsonExpCloverFermion(GaugeField &_Umu, GridCartesian &Fgrid,
                       GridRedBlackCartesian &Hgrid,
                       const RealD _mass,
+                      const RealD _twmass,
                       const RealD _csw_r = 0.0,
                       const RealD _csw_t = 0.0,
                       const WilsonAnisotropyCoefficients &clover_anisotropy = WilsonAnisotropyCoefficients(),
@@ -106,6 +107,8 @@ public:
       std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_r = 0" << std::endl;
     if (csw_t == 0)
       std::cout << GridLogWarning << "Initializing WilsonExpCloverFermion with csw_t = 0" << std::endl;
+
+    twmass = _twmass;
 
     ImportGauge(_Umu);
   }
@@ -249,15 +252,16 @@ public:
 protected:
   // here fixing the 4 dimensions, make it more general?
 
-  RealD csw_r;                                               // Clover coefficient - spatial
-  RealD csw_t;                                               // Clover coefficient - temporal
-  RealD diag_mass;                                           // Mass term
-  CloverFieldType CloverTerm;                 // Clover term
-  CloverFieldType ExpCloverTerm, ExpCloverTermInv;                 // ExpClover term
-  CloverFieldType ExpCloverTermEven, ExpCloverTermOdd;             // ExpClover term EO
-  CloverFieldType ExpCloverTermInvEven, ExpCloverTermInvOdd;       // ExpClover term Inv EO
-  CloverFieldType ExpCloverTermDagEven, ExpCloverTermDagOdd;       // ExpClover term Dag EO
-  CloverFieldType ExpCloverTermInvDagEven, ExpCloverTermInvDagOdd; // ExpClover term Inv Dag EO
+  RealD csw_r;                                                      // Clover coefficient - spatial
+  RealD csw_t;                                                      // Clover coefficient - temporal
+  RealD diag_mass;                                                  // Mass term
+  RealD twmass;                                                         // Twisted-mass
+  CloverFieldType CloverTerm;                                       // Clover term
+  CloverFieldType ExpCloverTerm, ExpCloverTermInv;                  // ExpClover term
+  CloverFieldType ExpCloverTermEven, ExpCloverTermOdd;              // ExpClover term EO
+  CloverFieldType ExpCloverTermInvEven, ExpCloverTermInvOdd;        // ExpClover term Inv EO
+  CloverFieldType ExpCloverTermDagEven, ExpCloverTermDagOdd;        // ExpClover term Dag EO
+  CloverFieldType ExpCloverTermInvDagEven, ExpCloverTermInvDagOdd;  // ExpClover term Inv Dag EO
 
  public:
   // eventually these can be compressed into 6x6 blocks instead of the 12x12
