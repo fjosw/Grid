@@ -100,7 +100,6 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
 
    autoView(CTv,CloverTerm,CpuRead);
    autoView(CTExpv,ExpCloverTerm,CpuWrite);
-   autoView(CTExpIv,ExpCloverTermInv,CpuWrite);
 
    thread_for(site, lvol, {
   	Coordinate lcoor;
@@ -157,6 +156,8 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   	   for (int b = 0; b < DimRep; b++)
   	    Qxexp()(j+Ns/2, k+Ns/2)(a, b) = ExpCloverOp(a + j * DimRep, b + k * DimRep);
 
+    // Now that the full 12x12 block is filled do poke!
+    pokeLocalSite(Qxexp, CTExpv, lcoor);
    });
   }
   ExpCloverTerm *= diag_mass;
@@ -174,37 +175,63 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   });
   T = timesI(T);
   ExpCloverTerm += T;
-  // ExpCloverTermInv *= (1 / diag_mass);
 
   int lvol = _Umu.Grid()->lSites();
   int DimRep = Impl::Dimension;
 
   {
-    autoView(CTv,ExpCloverTerm,CpuRead);
-    autoView(CTIv,ExpCloverTermInv,CpuWrite);
+    autoView(CTExpv,ExpCloverTerm,CpuRead);
+    autoView(CTExpIv,ExpCloverTermInv,CpuWrite);
     thread_for(site, lvol, {
       Coordinate lcoor;
       grid->LocalIndexToLocalCoor(site, lcoor);
-      Eigen::MatrixXcd EigenCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
-      Eigen::MatrixXcd EigenInvCloverOp = Eigen::MatrixXcd::Zero(Ns * DimRep, Ns * DimRep);
+      Eigen::MatrixXcd EigenCloverOp = Eigen::MatrixXcd::Zero(Ns/2 * DimRep, Ns/2 * DimRep);
+      Eigen::MatrixXcd EigenInvCloverOp = Eigen::MatrixXcd::Zero(Ns/2 * DimRep, Ns/2 * DimRep);
       typename SiteCloverType::scalar_object Qx = Zero(), Qxinv = Zero();
-      peekLocalSite(Qx, CTv, lcoor);
+      peekLocalSite(Qx, CTExpv, lcoor);
 
-      for (int j = 0; j < Ns; j++)
-        for (int k = 0; k < Ns; k++)
-          for (int a = 0; a < DimRep; a++)
-            for (int b = 0; b < DimRep; b++){
-              auto zz =  Qx()(j, k)(a, b);
-              EigenCloverOp(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
-      }
+      //
+      // upper left block
+      //
+
+      for (int j = 0; j < Ns/2; j++)
+       for (int k = 0; k < Ns/2; k++)
+        for (int a = 0; a < DimRep; a++)
+         for (int b = 0; b < DimRep; b++){
+          auto zz =  Qx()(j, k)(a, b);
+          EigenCloverOp(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
+         }
 
       EigenInvCloverOp = EigenCloverOp.inverse();
-      for (int j = 0; j < Ns; j++)
-        for (int k = 0; k < Ns; k++)
-          for (int a = 0; a < DimRep; a++)
-            for (int b = 0; b < DimRep; b++)
-              Qxinv()(j, k)(a, b) = EigenInvCloverOp(a + j * DimRep, b + k * DimRep);
-      pokeLocalSite(Qxinv, CTIv, lcoor);
+
+      for (int j = 0; j < Ns/2; j++)
+       for (int k = 0; k < Ns/2; k++)
+        for (int a = 0; a < DimRep; a++)
+         for (int b = 0; b < DimRep; b++)
+          Qxinv()(j, k)(a, b) = EigenInvCloverOp(a + j * DimRep, b + k * DimRep);
+
+      //
+      // lower right block
+      //
+
+      for (int j = 0; j < Ns/2; j++)
+       for (int k = 0; k < Ns/2; k++)
+        for (int a = 0; a < DimRep; a++)
+         for (int b = 0; b < DimRep; b++){
+          auto zz =  Qx()(j+Ns/2, k+Ns/2)(a, b);
+          EigenCloverOp(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
+         }
+
+      EigenInvCloverOp = EigenCloverOp.inverse();
+
+      for (int j = 0; j < Ns/2; j++)
+       for (int k = 0; k < Ns/2; k++)
+        for (int a = 0; a < DimRep; a++)
+         for (int b = 0; b < DimRep; b++)
+          Qxinv()(j+Ns/2, k+Ns/2)(a, b) = EigenInvCloverOp(a + j * DimRep, b + k * DimRep);
+
+      // Now that the full 12x12 block is filled do poke!
+      pokeLocalSite(Qxinv, CTExpIv, lcoor);
     });
   }
 
