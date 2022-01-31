@@ -176,9 +176,6 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   T = timesI(T);
   ExpCloverTerm += T;
 
-  int lvol = _Umu.Grid()->lSites();
-  int DimRep = Impl::Dimension;
-
   {
     autoView(CTExpv,ExpCloverTerm,CpuRead);
     autoView(CTExpIv,ExpCloverTermInv,CpuWrite);
