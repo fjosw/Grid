@@ -29,7 +29,7 @@ Author: neo <cossu@post.kek.jp>
 #define GRID_MATH_EXP_H
 
 #define DEFAULT_MAT_EXP 20
-#define DEFAULT_MAT_EXP_CLOVER 25
+//#define DEFAULT_MAT_EXP_CLOVER 25
 
 NAMESPACE_BEGIN(Grid);
 
@@ -117,6 +117,7 @@ accelerator_inline iMatrix<vtype,3> Exponentiate(const iMatrix<vtype,3> &arg, Re
   return (f0 * unit + timesMinusI(f1) * arg*alpha - f2 * iQ2);
 }
 
+/*
 static RealD cN[30];
 static const int Niter = DEFAULT_MAT_EXP_CLOVER;
 static int init_cN = 0;
@@ -136,6 +137,7 @@ static void set_cN(int N)
 	}
 	init_cN = 1;
 }
+
 
 template<class vtype, typename std::enable_if< GridTypeMapper<vtype>::TensorLevel == 0>::type * =nullptr>
 accelerator_inline iMatrix<vtype,6> Exponentiate(const iMatrix<vtype,6> &arg, RealD alpha  , Integer Nexp = DEFAULT_MAT_EXP_CLOVER )
@@ -197,6 +199,7 @@ accelerator_inline iMatrix<vtype,6> Exponentiate(const iMatrix<vtype,6> &arg, Re
   return (qn[0] * unit + qn[1] * alpha * arg + qn[2] * A2 + qn[3] * A3 + qn[4] * A4 + qn[5] * A5);
 
 }
+*/
 #endif
 
 

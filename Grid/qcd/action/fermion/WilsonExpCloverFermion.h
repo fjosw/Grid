@@ -31,6 +31,8 @@
 
 #include <Grid/Grid.h>
 
+#define DEFAULT_MAT_EXP_CLOVER 25
+
 NAMESPACE_BEGIN(Grid);
 
 ///////////////////////////////////////////////////////////////////
@@ -110,6 +112,15 @@ public:
 
     twmass = _twmass;
 
+    // coefficients for Horner scheme
+
+    cN[0] = 1.0;
+    cN[1] = 1.0;
+    for(int i = 2; i <= 99; i++)
+    {
+     cN[i] = cN[i-1] / (RealD(i));
+    }
+
     ImportGauge(_Umu);
   }
 
@@ -126,6 +137,7 @@ public:
   virtual void MeeDeriv(GaugeField &mat, const FermionField &U, const FermionField &V, int dag);
 
   void ImportGauge(const GaugeField &_Umu);
+  iMatrix<ComplexD,6> ExponentiateInternal(const iMatrix<ComplexD,6> &arg, const RealD& alpha);
 
   // Derivative parts unpreconditioned pseudofermions
   void MDeriv(GaugeField &force, const FermionField &X, const FermionField &Y, int dag)
@@ -255,7 +267,8 @@ protected:
   RealD csw_r;                                                      // Clover coefficient - spatial
   RealD csw_t;                                                      // Clover coefficient - temporal
   RealD diag_mass;                                                  // Mass term
-  RealD twmass;                                                         // Twisted-mass
+  RealD twmass; // Twisted-mass
+  RealD cN[100];
   CloverFieldType CloverTerm;                                       // Clover term
   CloverFieldType ExpCloverTerm, ExpCloverTermInv;                  // ExpClover term
   CloverFieldType ExpCloverTermEven, ExpCloverTermOdd;              // ExpClover term EO

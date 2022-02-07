@@ -127,7 +127,7 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   	    srcCloverOpUL(a + j * DimRep, b + k * DimRep) = std::complex<double>(zz);
   	   }
 
-  	ExpCloverOp = Exponentiate(srcCloverOpUL,1.0/(diag_mass));
+  	ExpCloverOp = ExponentiateInternal(srcCloverOpUL,1.0/(diag_mass));
 
   	for (int j = 0; j < Ns/2; j++)
   	 for (int k = 0; k < Ns/2; k++)
@@ -148,7 +148,7 @@ void WilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField &_Umu)
   	   }
 
 
-  	ExpCloverOp = Exponentiate(srcCloverOpLR,1.0/(diag_mass));
+  	ExpCloverOp = ExponentiateInternal(srcCloverOpLR,1.0/(diag_mass));
 
   	for (int j = 0; j < Ns/2; j++)
   	 for (int k = 0; k < Ns/2; k++)
@@ -325,6 +325,62 @@ void WilsonExpCloverFermion<Impl>::MooeeInternal(const FermionField &in, Fermion
 
 } // MooeeInternal
 
+template <class Impl>
+iMatrix<ComplexD,6> WilsonExpCloverFermion<Impl>::ExponentiateInternal(const iMatrix<ComplexD,6> &arg, const RealD& alpha)
+{
+	typedef iMatrix<ComplexD,6> mat;
+	int Niter = DEFAULT_MAT_EXP_CLOVER;
+
+	RealD qn[6];
+    RealD qnold[6];
+	RealD p[5];
+	RealD trA2, trA3, trA4;
+
+	mat A2, A3, A4, A5;
+	A2 = alpha * alpha * arg * arg;
+	A3 = alpha * arg * A2;
+	A4 = A2 * A2;
+	A5 = A2 * A3;
+
+	trA2 = toReal( trace(A2) );
+	trA3 = toReal( trace(A3) );
+	trA4 = toReal( trace(A4));
+
+	p[0] = toReal( trace(A3 * A3)) / 6.0 - 0.125 * trA4 * trA2 - trA3 * trA3 / 18.0 + trA2 * trA2 * trA2/ 48.0;
+	p[1] = toReal( trace(A5)) / 5.0 - trA3 * trA2 / 6.0;
+	p[2] = toReal( trace(A4)) / 4.0 - 0.125 * trA2 * trA2;
+	p[3] = trA3 / 3.0;
+	p[4] = 0.5 * trA2;
+
+	qnold[0] = cN[Niter];
+	qnold[1] = 0.0;
+	qnold[2] = 0.0;
+	qnold[3] = 0.0;
+	qnold[4] = 0.0;
+	qnold[5] = 0.0;
+
+	for(int i = Niter-1; i >= 0; i--)
+	{
+	 qn[0] = p[0] * qnold[5] + cN[i];
+     qn[1] = p[1] * qnold[5] + qnold[0];
+	 qn[2] = p[2] * qnold[5] + qnold[1];
+	 qn[3] = p[3] * qnold[5] + qnold[2];
+	 qn[4] = p[4] * qnold[5] + qnold[3];
+	 qn[5] = qnold[4];
+
+	 qnold[0] = qn[0];
+	 qnold[1] = qn[1];
+	 qnold[2] = qn[2];
+	 qnold[3] = qn[3];
+	 qnold[4] = qn[4];
+	 qnold[5] = qn[5];
+	}
+
+	mat unit(1.0);
+
+	return (qn[0] * unit + qn[1] * alpha * arg + qn[2] * A2 + qn[3] * A3 + qn[4] * A4 + qn[5] * A5);
+
+}
 
 // Derivative parts
 template <class Impl>
