@@ -30,6 +30,8 @@
 
 // Helper routines that implement common clover functionality
 
+#define DEFAULT_MAT_EXP_CLOVER 25
+
 NAMESPACE_BEGIN(Grid);
 
 template<class Impl> class WilsonCloverHelpers {
@@ -593,6 +595,173 @@ public:
       pokeLocalSite(triangle_inv_tmp, triangleInv_v, lcoor);
     });
   }
+
+  // ToDo: Only do the exponentiation here
+
+  static void ExponentiateHermitean6by6(const iMatrix<ComplexD,6> &arg, const RealD& alpha, iMatrix<ComplexD,6>& dest){
+
+	  typedef iMatrix<ComplexD,6> mat;
+	  int Niter = DEFAULT_MAT_EXP_CLOVER;
+
+	  RealD qn[6];
+	  RealD qnold[6];
+	  RealD p[5];
+	  RealD trA2, trA3, trA4;
+
+	  mat A2, A3, A4, A5;
+	  A2 = alpha * alpha * arg * arg;
+	  A3 = alpha * arg * A2;
+	  A4 = A2 * A2;
+	  A5 = A2 * A3;
+
+	  trA2 = toReal( trace(A2) );
+	  trA3 = toReal( trace(A3) );
+	  trA4 = toReal( trace(A4));
+
+	  p[0] = toReal( trace(A3 * A3)) / 6.0 - 0.125 * trA4 * trA2 - trA3 * trA3 / 18.0 + trA2 * trA2 * trA2/ 48.0;
+	  p[1] = toReal( trace(A5)) / 5.0 - trA3 * trA2 / 6.0;
+	  p[2] = toReal( trace(A4)) / 4.0 - 0.125 * trA2 * trA2;
+	  p[3] = trA3 / 3.0;
+	  p[4] = 0.5 * trA2;
+
+	  qnold[0] = cN[Niter];
+	  qnold[1] = 0.0;
+	  qnold[2] = 0.0;
+	  qnold[3] = 0.0;
+	  qnold[4] = 0.0;
+	  qnold[5] = 0.0;
+
+	  for(int i = Niter-1; i >= 0; i--)
+	  {
+	   qn[0] = p[0] * qnold[5] + cN[i];
+	   qn[1] = p[1] * qnold[5] + qnold[0];
+	   qn[2] = p[2] * qnold[5] + qnold[1];
+	   qn[3] = p[3] * qnold[5] + qnold[2];
+	   qn[4] = p[4] * qnold[5] + qnold[3];
+	   qn[5] = qnold[4];
+
+	   qnold[0] = qn[0];
+	   qnold[1] = qn[1];
+	   qnold[2] = qn[2];
+	   qnold[3] = qn[3];
+	   qnold[4] = qn[4];
+	   qnold[5] = qn[5];
+	  }
+
+	  mat unit(1.0);
+
+	  dest = (qn[0] * unit + qn[1] * alpha * arg + qn[2] * A2 + qn[3] * A3 + qn[4] * A4 + qn[5] * A5);
+
+  }
+
+  static void Exponentiate(const CloverDiagonalField& diagonal,
+                       	   const CloverTriangleField& triangle,
+						   CloverDiagonalField&       diagonalExp,
+						   CloverTriangleField&       triangleExp,
+						   const RealD& alpha,) {
+      conformable(diagonal, diagonalExp);
+      conformable(triangle, triangleExp);
+      conformable(diagonal, triangle);
+
+      diagonalInv.Checkerboard() = diagonal.Checkerboard();
+      triangleInv.Checkerboard() = triangle.Checkerboard();
+
+      GridBase* grid = diagonal.Grid();
+
+      long lsites = grid->lSites();
+
+      typedef typename SiteCloverDiagonal::scalar_object scalar_object_diagonal;
+      typedef typename SiteCloverTriangle::scalar_object scalar_object_triangle;
+      typedef iMatrix<ComplexD,6> mat;
+
+      autoView(diagonal_v,  diagonal,  CpuRead);
+      autoView(triangle_v,  triangle,  CpuRead);
+      autoView(diagonalExp_v, diagonalExp, CpuWrite);
+      autoView(triangleExp_v, triangleExp, CpuWrite);
+
+      // do upper left block
+
+      // do lower right block
+
+      thread_for(site, lsites, { // NOTE: Not on GPU because of (peek/poke)LocalSite
+
+    	//Eigen::MatrixXcd clover_inv_eigen = Eigen::MatrixXcd::Zero(Ns*Nc, Ns*Nc);
+        //Eigen::MatrixXcd clover_eigen = Eigen::MatrixXcd::Zero(Ns*Nc, Ns*Nc);
+
+
+    	mat srcCloverOpUL(0.0); // upper left block
+    	mat srcCloverOpLR(0.0); // lower right block
+    	mat ExpCloverOp;
+
+        scalar_object_diagonal diagonal_tmp     = Zero();
+        scalar_object_diagonal diagonal_exp_tmp = Zero();
+        scalar_object_triangle triangle_tmp     = Zero();
+        scalar_object_triangle triangle_exp_tmp = Zero();
+
+        Coordinate lcoor;
+        grid->LocalIndexToLocalCoor(site, lcoor);
+
+        peekLocalSite(diagonal_tmp, diagonal_v, lcoor);
+        peekLocalSite(triangle_tmp, triangle_v, lcoor);
+
+        // block = 0
+        int block;
+        block = 0;
+        for(int i = 0; i < 6; i++){
+        	for(int j = 0; j < 6; j++){
+        		if (i == j){
+        			srcCloverOpUL(i,j) = static_cast<ComplexD>(TensorRemove(diagonal_tmp()(block)(i)));
+        		}
+        		else{
+        			srcCloverOpUL(i,j) = static_cast<ComplexD>(TensorRemove(triangle_elem(triangle_tmp, block, i, j)));
+        		}
+        	}
+        }
+        // block = 1
+        block = 1;
+        for(int i = 0; i < 6; i++){
+          	for(int j = 0; j < 6; j++){
+           		if (i == j){
+           			srcCloverOpLR(i,j) = static_cast<ComplexD>(TensorRemove(diagonal_tmp()(block)(i)));
+           		}
+           		else{
+           			srcCloverOpLR(i,j) = static_cast<ComplexD>(TensorRemove(triangle_elem(triangle_tmp, block, i, j)));
+           		}
+            }
+        }
+
+        ExponentiateHermitean6by6(srcCloverOpUL,alpha,ExpCloverOp);
+
+        block = 0;
+        for(int i = 0; i < 6; i++){
+        	for(int j = 0; j < 6; j++){
+            	if (i == j){
+            		diagonal_exp_tmp()(block)(i) = ExpCloverOp(i,j);
+            	}
+            	else{
+            		triangle_exp_tmp()(block)(triangle_index(i, j)) = ExpCloverOp(i,j);
+            	}
+           	}
+        }
+
+        ExponentiateHermitean6by6(srcCloverOpLR,alpha,ExpCloverOp);
+
+        block = 1;
+        for(int i = 0; i < 6; i++){
+        	for(int j = 0; j < 6; j++){
+              	if (i == j){
+              		diagonal_exp_tmp()(block)(i) = ExpCloverOp(i,j);
+               	}
+               	else{
+               		triangle_exp_tmp()(block)(triangle_index(i, j)) = ExpCloverOp(i,j);
+               	}
+            }
+        }
+
+        pokeLocalSite(diagonal_exp_tmp, diagonalExp_v, lcoor);
+        pokeLocalSite(triangle_exp_tmp, triangleExp_v, lcoor);
+      });
+    }
 
   static void ConvertLayout(const CloverField&   full,
                             CloverDiagonalField& diagonal,
