@@ -663,8 +663,8 @@ public:
       conformable(triangle, triangleExp);
       conformable(diagonal, triangle);
 
-      diagonalInv.Checkerboard() = diagonal.Checkerboard();
-      triangleInv.Checkerboard() = triangle.Checkerboard();
+      diagonalExp.Checkerboard() = diagonal.Checkerboard();
+      triangleExp.Checkerboard() = triangle.Checkerboard();
 
       GridBase* grid = diagonal.Grid();
 
