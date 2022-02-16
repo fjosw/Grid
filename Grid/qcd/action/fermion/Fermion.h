@@ -54,8 +54,9 @@ NAMESPACE_CHECK(Wilson);
 NAMESPACE_CHECK(WilsonTM);
 #include <Grid/qcd/action/fermion/WilsonCloverFermion.h> // 4d wilson clover fermions
 #include <Grid/qcd/action/fermion/CompactWilsonCloverFermion.h> // 4d compact wilson clover fermions
+#include <Grid/qcd/action/fermion/CompactWilsonExpCloverFermion.h> // 4d Compact Wilson ExpClover fermions
 NAMESPACE_CHECK(WilsonClover);
-#include <Grid/qcd/action/fermion/WilsonExpCloverFermion.h> // 4d wilson exponentiated clover fermions
+#include <Grid/qcd/action/fermion/WilsonExpCloverFermion.h> // 4d Wilson exponentiated Clover fermions
 NAMESPACE_CHECK(WilsonExpClover);
 #include <Grid/qcd/action/fermion/WilsonFermion5D.h>     // 5d base used by all 5d overlap types
 NAMESPACE_CHECK(Wilson5D);
@@ -155,6 +156,23 @@ typedef WilsonCloverFermion<WilsonTwoIndexSymmetricImplD> WilsonCloverTwoIndexSy
 typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplR> WilsonCloverTwoIndexAntiSymmetricFermionR;
 typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplF> WilsonCloverTwoIndexAntiSymmetricFermionF;
 typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplD> WilsonCloverTwoIndexAntiSymmetricFermionD;
+
+// Clover fermions
+typedef WilsonExpCloverFermion<WilsonImplR> WilsonExpCloverFermionR;
+typedef WilsonExpCloverFermion<WilsonImplF> WilsonExpCloverFermionF;
+typedef WilsonExpCloverFermion<WilsonImplD> WilsonExpCloverFermionD;
+
+typedef WilsonExpCloverFermion<WilsonAdjImplR> WilsonExpCloverAdjFermionR;
+typedef WilsonExpCloverFermion<WilsonAdjImplF> WilsonExpCloverAdjFermionF;
+typedef WilsonExpCloverFermion<WilsonAdjImplD> WilsonExpCloverAdjFermionD;
+
+typedef WilsonExpCloverFermion<WilsonTwoIndexSymmetricImplR> WilsonExpCloverTwoIndexSymmetricFermionR;
+typedef WilsonExpCloverFermion<WilsonTwoIndexSymmetricImplF> WilsonExpCloverTwoIndexSymmetricFermionF;
+typedef WilsonExpCloverFermion<WilsonTwoIndexSymmetricImplD> WilsonExpCloverTwoIndexSymmetricFermionD;
+
+typedef WilsonExpCloverFermion<WilsonTwoIndexAntiSymmetricImplR> WilsonExpCloverTwoIndexAntiSymmetricFermionR;
+typedef WilsonExpCloverFermion<WilsonTwoIndexAntiSymmetricImplF> WilsonExpCloverTwoIndexAntiSymmetricFermionF;
+typedef WilsonExpCloverFermion<WilsonTwoIndexAntiSymmetricImplD> WilsonExpCloverTwoIndexAntiSymmetricFermionD;
 
 // Compact Clover fermions
 typedef CompactWilsonCloverFermion<WilsonImplR> CompactWilsonCloverFermionR;
