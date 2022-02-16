@@ -356,19 +356,18 @@ void CompactWilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField& _Umu) {
 
   // Report timings
   double t9 = usecond();
-  
-  std::cout << GridLogDebug << "CompactWilsonExpCloverFermion::ImportGauge timings:"
-            << " WilsonFermion::Importgauge = " << (t1 - t0) / 1e6
-            << ", allocations = "               << (t2 - t1) / 1e6
-            << ", field strength = "            << (t3 - t2) / 1e6
-            << ", fill clover = "               << (t4 - t3) / 1e6
-            << ", convert = "                   << (t5 - t4) / 1e6
-            << ", exponentiation = "            << (t6 - t5) / 1e6
-            << ", boundaries = "                << (t7 - t6) / 1e6
-			      << ", inversions = "                << (t8 - t7) / 1e6
-            << ", pick cbs = "                  << (t9 - t8) / 1e6
-            << ", total = "                     << (t9 - t0) / 1e6
-            << std::endl;
+
+  std::cout << GridLogDebug << "CompactWilsonExpCloverFermion::ImportGauge timings:" << std::endl;
+  std::cout << GridLogDebug << " WilsonFermion::Importgauge = " << (t1 - t0) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", allocations = "               << (t2 - t1) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", field strength = "            << (t3 - t2) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", fill clover = "               << (t4 - t3) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", convert = "                   << (t5 - t4) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", exponentiation = "            << (t6 - t5) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", boundaries = "                << (t7 - t6) / 1e6 << std::endl;
+	std::cout << GridLogDebug << ", inversions = "                << (t8 - t7) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", pick cbs = "                  << (t9 - t8) / 1e6 << std::endl;
+  std::cout << GridLogDebug << ", total = "                     << (t9 - t0) / 1e6 << std::endl;
 }
 
 NAMESPACE_END(Grid);
