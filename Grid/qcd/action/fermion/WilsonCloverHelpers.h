@@ -30,7 +30,7 @@
 
 // Helper routines that implement common clover functionality
 
-#define DEFAULT_MAT_EXP_CLOVER 25
+#define DEFAULT_MAT_EXP_CLOVER 22
 
 NAMESPACE_BEGIN(Grid);
 
@@ -516,7 +516,7 @@ public:
                      CloverTriangleField&       triangleInv) {
     conformable(diagonal, diagonalInv);
     conformable(triangle, triangleInv);
-    conformable(diagonal, triangle);
+    conformable(diagonal, triangle);(double)
 
     diagonalInv.Checkerboard() = diagonal.Checkerboard();
     triangleInv.Checkerboard() = triangle.Checkerboard();
@@ -597,11 +597,26 @@ public:
   }
 
   // ToDo: Only do the exponentiation here
+  static int init_coeffs = 0;
+  static RealD cN[DEFAULT_MAT_EXP_CLOVER + 1];
+
+  static void set_cN(){
+	  if(init_coeffs == 0){
+		  cN[0] = 1.0;
+		  cN[1] = 1.0;
+		  for(int i = 2; i <= DEFAULT_MAT_EXP_CLOVER; i++){
+			  cN[i] = cN[i-1] / RealD(i);
+		  }
+		  init_coeffs = 1;
+	  }
+  }
 
   static void ExponentiateHermitean6by6(const iMatrix<ComplexD,6> &arg, const RealD& alpha, iMatrix<ComplexD,6>& dest){
 
 	  typedef iMatrix<ComplexD,6> mat;
 	  int Niter = DEFAULT_MAT_EXP_CLOVER;
+
+	  set_cN();
 
 	  RealD qn[6];
 	  RealD qnold[6];
@@ -658,7 +673,7 @@ public:
                        	   const CloverTriangleField& triangle,
 						   CloverDiagonalField&       diagonalExp,
 						   CloverTriangleField&       triangleExp,
-						   const RealD& alpha,) {
+						   const RealD& alpha) {
       conformable(diagonal, diagonalExp);
       conformable(triangle, triangleExp);
       conformable(diagonal, triangle);
@@ -679,15 +694,7 @@ public:
       autoView(diagonalExp_v, diagonalExp, CpuWrite);
       autoView(triangleExp_v, triangleExp, CpuWrite);
 
-      // do upper left block
-
-      // do lower right block
-
       thread_for(site, lsites, { // NOTE: Not on GPU because of (peek/poke)LocalSite
-
-    	//Eigen::MatrixXcd clover_inv_eigen = Eigen::MatrixXcd::Zero(Ns*Nc, Ns*Nc);
-        //Eigen::MatrixXcd clover_eigen = Eigen::MatrixXcd::Zero(Ns*Nc, Ns*Nc);
-
 
     	mat srcCloverOpUL(0.0); // upper left block
     	mat srcCloverOpLR(0.0); // lower right block
@@ -738,7 +745,7 @@ public:
             	if (i == j){
             		diagonal_exp_tmp()(block)(i) = ExpCloverOp(i,j);
             	}
-            	else{
+            	else if(i < j){
             		triangle_exp_tmp()(block)(triangle_index(i, j)) = ExpCloverOp(i,j);
             	}
            	}
@@ -752,7 +759,7 @@ public:
               	if (i == j){
               		diagonal_exp_tmp()(block)(i) = ExpCloverOp(i,j);
                	}
-               	else{
+               	else if(i < j){
                		triangle_exp_tmp()(block)(triangle_index(i, j)) = ExpCloverOp(i,j);
                	}
             }
