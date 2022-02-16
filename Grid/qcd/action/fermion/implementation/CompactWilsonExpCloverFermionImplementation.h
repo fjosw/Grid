@@ -138,12 +138,12 @@ template<class Impl>
 void CompactWilsonExpCloverFermion<Impl>::Mooee(const FermionField& in, FermionField& out) {
   if(in.Grid()->_isCheckerBoarded) {
     if(in.Checkerboard() == Odd) {
-      MooeeInternal(in, out, DiagonalOdd, TriangleOdd);
+      MooeeInternal(in, out, DiagonalExpOdd, TriangleExpOdd);
     } else {
-      MooeeInternal(in, out, DiagonalEven, TriangleEven);
+      MooeeInternal(in, out, DiagonalExpEven, TriangleExpEven);
     }
   } else {
-    MooeeInternal(in, out, Diagonal, Triangle);
+    MooeeInternal(in, out, DiagonalExp, TriangleExp);
   }
   if(open_boundaries) ApplyBoundaryMask(out);
 }
@@ -157,12 +157,12 @@ template<class Impl>
 void CompactWilsonExpCloverFermion<Impl>::MooeeInv(const FermionField& in, FermionField& out) {
   if(in.Grid()->_isCheckerBoarded) {
     if(in.Checkerboard() == Odd) {
-      MooeeInternal(in, out, DiagonalInvOdd, TriangleInvOdd);
+      MooeeInternal(in, out, DiagonalExpInvOdd, TriangleExpInvOdd);
     } else {
-      MooeeInternal(in, out, DiagonalInvEven, TriangleInvEven);
+      MooeeInternal(in, out, DiagonalExpInvEven, TriangleExpInvEven);
     }
   } else {
-    MooeeInternal(in, out, DiagonalInv, TriangleInv);
+    MooeeInternal(in, out, DiagonalExpInv, TriangleExpInv);
   }
   if(open_boundaries) ApplyBoundaryMask(out);
 }
