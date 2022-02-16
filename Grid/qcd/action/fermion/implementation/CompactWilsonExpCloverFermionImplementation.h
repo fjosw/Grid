@@ -349,18 +349,33 @@ void CompactWilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField& _Umu) {
   double t7 = usecond();
   GridBase* grid = DiagonalExp.Grid();
   long lsites = grid->lSites();
+  autoView(T_v,  DiagonalExp,  CpuRead);
   autoView(DiagonalExp_v, DiagonalExp, CpuWrite);
+
 
   thread_for(site, lsites,
     {
 
+     scalar_object_diagonal diagonal_src = Zero();
+     scalar_object_diagonal diagonal_dst = Zero();
+
      Coordinate lcoor;
      grid->LocalIndexToLocalCoor(site, lcoor);
 
-      for(int i = 0; i < 6; i++){
-    	 DiagonalExp_v[lcoor]()(0)(i, i) += +timesI(twmass);
-    	 DiagonalExp_v[lcoor]()(1)(i, i) += -timesI(twmass);
-      }
+     peekLocalSite(diagonal_src, T_v, lcoor);
+     Complex D sum;
+
+     for(int i = 0; i < 6; i++){
+
+    	sum = static_cast<ComplexD>(TensorRemove(diagonal_src()(0)(i))) + timesI(twmass);
+    	diagonal_dst()(0)(i) = sum;
+
+    	sum = static_cast<ComplexD>(TensorRemove(diagonal_src()(1)(i))) - timesI(twmass);
+    	diagonal_dst()(1)(i) = sum;
+     }
+
+     pokeLocalSite(diagonal_dst, DiagonalExp_v, lcoor);
+
     });
 
   // Invert the clover term in the improved layout
