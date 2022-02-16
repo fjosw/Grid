@@ -30,9 +30,12 @@
 
 // Helper routines that implement common clover functionality
 
-#define DEFAULT_MAT_EXP_CLOVER 22
+#define DEFAULT_MAT_N_EXP_CLOVER 22
 
 NAMESPACE_BEGIN(Grid);
+
+static int init_coeffs = 0;
+static RealD cN[DEFAULT_MAT_N_EXP_CLOVER + 1];
 
 template<class Impl> class WilsonCloverHelpers {
 public:
@@ -597,14 +600,12 @@ public:
   }
 
   // ToDo: Only do the exponentiation here
-  static int init_coeffs = 0;
-  static RealD cN[DEFAULT_MAT_EXP_CLOVER + 1];
 
   static void set_cN(){
 	  if(init_coeffs == 0){
 		  cN[0] = 1.0;
 		  cN[1] = 1.0;
-		  for(int i = 2; i <= DEFAULT_MAT_EXP_CLOVER; i++){
+		  for(int i = 2; i <= DEFAULT_MAT_N_EXP_CLOVER; i++){
 			  cN[i] = cN[i-1] / RealD(i);
 		  }
 		  init_coeffs = 1;
@@ -614,7 +615,7 @@ public:
   static void ExponentiateHermitean6by6(const iMatrix<ComplexD,6> &arg, const RealD& alpha, iMatrix<ComplexD,6>& dest){
 
 	  typedef iMatrix<ComplexD,6> mat;
-	  int Niter = DEFAULT_MAT_EXP_CLOVER;
+	  int Niter = DEFAULT_MAT_N_EXP_CLOVER;
 
 	  set_cN();
 

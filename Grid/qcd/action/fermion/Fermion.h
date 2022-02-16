@@ -157,7 +157,7 @@ typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplR> WilsonCloverTwoInd
 typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplF> WilsonCloverTwoIndexAntiSymmetricFermionF;
 typedef WilsonCloverFermion<WilsonTwoIndexAntiSymmetricImplD> WilsonCloverTwoIndexAntiSymmetricFermionD;
 
-// Clover fermions
+// Exponentiated Clover fermions
 typedef WilsonExpCloverFermion<WilsonImplR> WilsonExpCloverFermionR;
 typedef WilsonExpCloverFermion<WilsonImplF> WilsonExpCloverFermionF;
 typedef WilsonExpCloverFermion<WilsonImplD> WilsonExpCloverFermionD;
