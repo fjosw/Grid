@@ -337,7 +337,7 @@ void CompactWilsonExpCloverFermion<Impl>::ImportGauge(const GaugeField& _Umu) {
 
   // Possibly modify the boundary values
   double t6 = usecond();
-  if(open_boundaries) CompactHelpers::ModifyBoundaries(Diagonal, Triangle, csw_t, cF, this->diag_mass);
+  if(open_boundaries) CompactHelpers::ModifyBoundaries(DiagonalExp, TriangleExp, csw_t, cF, this->diag_mass);
 
   // Invert the clover term in the improved layout
   double t7 = usecond();
