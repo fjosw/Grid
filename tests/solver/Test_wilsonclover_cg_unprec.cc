@@ -77,14 +77,17 @@ int main (int argc, char ** argv)
 
   ConjugateGradient<LatticeFermion> CG(1.0e-8,10000);
 
+  std::cout << GridLogMessage << "Testing Wilson Clover" << std::endl;
   MdagMLinearOperator<WilsonCloverFermionR,LatticeFermion> HermOp(Dw);
   result=Zero();
   CG(HermOp,src,result);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson Clover" << std::endl;
   MdagMLinearOperator<CompactWilsonCloverFermionR,LatticeFermion> HermOp_compact(Dw_compact);
   result=Zero();
   CG(HermOp_compact,src,result);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson ExpClover" << std::endl;
   MdagMLinearOperator<CompactWilsonExpCloverFermionR,LatticeFermion> HermOp_exp_compact(Dwe_compact);
   result=Zero();
   CG(HermOp_exp_compact,src,result);

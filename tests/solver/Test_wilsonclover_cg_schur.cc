@@ -71,14 +71,17 @@ int main (int argc, char ** argv)
   RealD csw_t = 1.0;
   RealD cF = 1.0;
 
+  std::cout << GridLogMessage << "Testing Wilson Clover" << std::endl;
   WilsonCloverFermionR Dw(Umu, Grid, RBGrid, mass, csw_r, csw_t);
   result=Zero();
   SchurSolver(Dw,src,result);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson Clover" << std::endl;
   CompactWilsonCloverFermionR Dw_compact(Umu, Grid, RBGrid, mass, csw_r, csw_t, 0.0);
   result=Zero();
   SchurSolver(Dw_compact,src,result);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson ExpClover" << std::endl;
   CompactWilsonExpCloverFermionR Dwe_compact(Umu, Grid, RBGrid, mass, csw_r, csw_t, 0.0);
   result=Zero();
   SchurSolver(Dwe_compact,src,result);

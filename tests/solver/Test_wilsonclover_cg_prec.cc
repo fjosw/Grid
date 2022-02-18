@@ -87,14 +87,17 @@ int main (int argc, char ** argv)
 
   ConjugateGradient<LatticeFermion> CG(1.0e-8,10000);
 
+  std::cout << GridLogMessage << "Testing Wilson Clover" << std::endl;
   SchurDiagMooeeOperator<WilsonCloverFermionR,LatticeFermion> HermOpEO(Dw);
   result_o=Zero();
   CG(HermOpEO,src_o,result_o);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson Clover" << std::endl;
   SchurDiagMooeeOperator<CompactWilsonCloverFermionR,LatticeFermion> HermOpEO_compact(Dw_compact);
   result_o=Zero();
   CG(HermOpEO_compact,src_o,result_o);
 
+  std::cout << GridLogMessage << "Testing Compact Wilson ExpClover" << std::endl;
   SchurDiagMooeeOperator<CompactWilsonExpCloverFermionR,LatticeFermion> HermOpEO_exp_compact(Dwe_compact);
   result_o=Zero();
   CG(HermOpEO_exp_compact,src_o,result_o);
