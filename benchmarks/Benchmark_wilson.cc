@@ -146,13 +146,25 @@ int main (int argc, char ** argv)
   ref = -0.5*ref;
   RealD mass=0.1;
 
-  typename WilsonFermionR::ImplParams params;
+  int nwarmup=100;
+  int ncall=10000;
 
-  WilsonFermionR Dw(Umu,Grid,RBGrid,mass,params);
+  typename WilsonFermionF::ImplParams params;
+
+  WilsonFermionF Dw(Umu,Grid,RBGrid,mass,params);
+
+  std::cout<<GridLogMessage << "Warm up"<<std::endl;
+
+
+  Grid.Barrier();
+
+  for(int i=0;i<nwarmup;i++){
+    Dw.Dhop(src,result,0);
+  }
+
+  Grid.Barrier();
 
   std::cout<<GridLogMessage << "Calling Dw"<<std::endl;
-  int ncall=1000;
-  //int ncall=1;
 
   // Counters
   Dw.ZeroCounters();
